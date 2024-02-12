@@ -34,6 +34,12 @@ describe('Call Settings Client Tests for UcmBackendConnector', () => {
             destinationVoicemailEnabled: false,
             e164Number: '',
           },
+          {
+            dn: '29903',
+            destination: '8006',
+            destinationVoicemailEnabled: false,
+            e164Number: '8005',
+          },
         ],
       },
     };
@@ -92,6 +98,21 @@ describe('Call Settings Client Tests for UcmBackendConnector', () => {
       expect(response.message).toEqual(SUCCESS_MESSAGE);
       expect(callForwardSetting.enabled).toEqual(false);
       expect(callForwardSetting.destination).toBeFalsy();
+      expect(webex.request).toBeCalledOnceWith({
+        method: HTTP_METHODS.GET,
+        uri: callForwardingUri,
+      });
+    });
+
+    it('Success: Get Call Forward Always setting when set to destination', async () => {
+      const response = await callSettingsClient.getCallForwardAlwaysSetting('8005');
+
+      const callForwardSetting = response.data.callSetting as CallForwardAlwaysSetting;
+
+      expect(response.statusCode).toEqual(200);
+      expect(response.message).toEqual(SUCCESS_MESSAGE);
+      expect(callForwardSetting.enabled).toEqual(true);
+      expect(callForwardSetting.destination).toEqual('8006');
       expect(webex.request).toBeCalledOnceWith({
         method: HTTP_METHODS.GET,
         uri: callForwardingUri,
